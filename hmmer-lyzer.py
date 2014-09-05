@@ -37,7 +37,6 @@ class HmmerAnalyze:
             s.sns_file = open(sns_filename, 'r')
         except IOError:
             print('Cannot find/open sensor HMMER file')
-            sys.exit(1)
         else:
             s.sns_csvrdr = csv.reader(s.sns_file, delimiter=s.delimiter, 
                                       quotechar=s.quotechar)
@@ -50,7 +49,6 @@ class HmmerAnalyze:
             s.hxt_file = open(hxt_filename, 'r')
         except IOError:
             print('Cannot find/open transporter HMMER file')
-            sys.exit(1)
         else:
             s.hxt_csvrdr = csv.reader(s.hxt_file, delimiter=s.delimiter, 
                                       quotechar=s.quotechar)
