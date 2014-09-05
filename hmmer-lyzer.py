@@ -94,15 +94,12 @@ class HmmerAnalyze:
                     pass
         except ValueError:
             print('CSV column values for sensor file must be integers.')
-            sys.exit(1)
         except TypeError:
             print('Remember to load column values using setCSVVars(...)!')
-            sys.exit(1)
         except IndexError:
             print('CSV column values for sensor file must be between 0 and the'
                   ' total number of columns-1, inclusive.  The provided file' 
                   ' has ', len(s.sns_csvlist[0]), ' columns total.')
-            sys.exit(1)
 
         try:
             for entry in s.hxt_csvlist:
@@ -138,13 +135,11 @@ class HmmerAnalyze:
                         s.scores[i][g[0]] += (None,)
         except ValueError:
             print('CSV column values for transporter file must be integers.')
-            sys.exit(1)
         except IndexError:
             print('CSV column values for transporter file must be between 0'
                   ' and the total number of columns-1, inclusive.  The' 
                   ' provided file has ', len(s.hxt_csvlist[0]), ' columns'
                   ' total.')
-            sys.exit(1)
 
     #Will need to make this take some sort of temporary 'acting' scores dict
     # that can be modified with member functions.
