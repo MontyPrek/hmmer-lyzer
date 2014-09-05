@@ -75,10 +75,15 @@ class HmmerAnalyze:
         s.hxt_id_col = hxt_id_col
         s.hxt_gene_col = hxt_gene_col
 
-    def pairScores(s):
+    def pairScores(s, truncate_ident=0):
         try:
             for entry in s.sns_csvlist:
                 ident = entry[s.sns_id_col].replace(' ', '_').lower()
+                if truncate_ident:
+                    ident_split = ident.split('_')
+                    ident = ''
+                    for x in range(truncate_ident):
+                        ident += ident_split[x] + '_'
                 gene = entry[s.sns_gene_col].replace(' ', '_').lower()
                 score = entry[s.sns_score_col]
                 if ident not in s.scores:
@@ -102,6 +107,11 @@ class HmmerAnalyze:
         try:
             for entry in s.hxt_csvlist:
                 ident = entry[s.hxt_id_col].replace(' ', '_').lower()
+                if truncate_ident:
+                    ident_split = ident.split('_')
+                    ident = ''
+                    for x in range(truncate_ident):
+                        ident += ident_split[x] + '_'
                 gene = entry[s.hxt_gene_col].replace(' ', '_').lower()
                 score = entry[s.hxt_score_col]
                 #Will be an entire unpaired species in this case
