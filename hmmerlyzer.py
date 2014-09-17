@@ -274,5 +274,6 @@ class HmmerAnalyze:
             for ident in s.scores_work:
                 for i in range(len(s.sns_csvlist)):
                     if s.sns_csvlist[i][s.sns_id_col]==ident:
-                        outfile.write(s.sns_csvlist[i][22], ',')
+                        outfile.write(s.sns_csvlist[i][22])
+                        outfile.write(",")
                         break
