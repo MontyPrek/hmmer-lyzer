@@ -1,6 +1,7 @@
 import csv
 import sys
 import matplotlib.pyplot as plt
+import copy
 
 class HmmerAnalyze:
 
@@ -27,6 +28,7 @@ class HmmerAnalyze:
         # to modify the tuple anyway in the transporter portion, so I should
         # use a list since they are much faster anyway. Consider it.
         s.scores = {}
+        s.scores_work = {}
 
         #If I've got to open any more files, make this a function
         #Also note that it's possible that turning the csv reader into a 
@@ -167,3 +169,42 @@ class HmmerAnalyze:
         plt.scatter(x, y)
         plt.plot([0, 900], [0, 900], 'k-')
         plt.show()
+
+    #This operates on the working scores array. 
+    # string=(<string>, ...): A tuple of the strings to search for
+    # action='remove', 'keep': Whether to remove all entries in which
+    #       string appears in field or remove ALL BUT the entries in which
+    #       string appears in field
+    # array='working', 'base': Whether to use the base scores array or the 
+    #       working scores array as the resource to operate on. In, either 
+    #       case, the old working scores array is overwritten.
+    #
+    #By default, this function removes all entries from the base set to add
+    # to the working scores array, effectively clearing the working scores 
+    # array.
+    #TODO: Implement a field parameter to be able to search fields other
+    #       than just species identifier. Gene name?
+    def filterPairsByString(s, strings=('',),  action='remove', array='base'):
+        temp_scores = {}
+        
+        if array=='base': source = s.scores
+        elif array=='working': source = s.scores_work
+        else: 
+            print('The array parameter must either be \'base\' or'
+                    ' \'working\'.')
+            return
+
+        for ident in source:
+            for string in strings:
+                if string in ident:
+                    if action=='keep':
+                        temp_scores[ident] = copy.deepcopy(source[ident]) 
+                    elif action!='remove':
+                        print('The action parameter must be \'keep\' or'
+                              ' \'remove\'.')
+                        return
+                elif action=='remove':
+                    temp_scores[ident] = copy.deepcopy(source[ident])
+
+        s.scores_work = temp_scores
+

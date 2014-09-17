@@ -38,3 +38,16 @@ Generate plots
 ```
 obj_name.showPlot('species_id_field_entry')
 ```
+
+Filter entries by strings in identifier field
+```
+obj_name.filterPairsByString(strings=('candida',), action='remove', array='base')
+```
+The array parameter describes whether to source from the base scores array, or the working array if set to 'working'.
+The action parameter either removes any identifiers with any of the requested strings or keeps only those with the requested strings if set to 'keep'.
+The strings parameter is a tuple, and as such can accept multiple strings to search for
+Note that each time, the working set is overwritten with the additions or removals you made.
+The working data set is available under
+```
+obj_name.scores_work
+```
