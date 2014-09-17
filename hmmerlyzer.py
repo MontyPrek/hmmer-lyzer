@@ -2,6 +2,11 @@ import csv
 import sys
 import matplotlib.pyplot as plt
 import copy
+from numpy import arctan
+from numpy import absolute
+from numpy import sqrt
+from numpy import sin
+from numpy import power
 
 class HmmerAnalyze:
 
@@ -77,6 +82,8 @@ class HmmerAnalyze:
         s.hxt_id_col = hxt_id_col
         s.hxt_gene_col = hxt_gene_col
 
+    #TODO: Convert relevant values from strings to ints at pairing time
+    #       so I don't have to deal with it everywhere else.
     def pairScores(s, truncate_ident=0):
         try:
             for entry in s.sns_csvlist:
@@ -207,4 +214,65 @@ class HmmerAnalyze:
                     temp_scores[ident] = copy.deepcopy(source[ident])
 
         s.scores_work = temp_scores
+    
+    #This operates on the wprking scores array.
+    # measure='absolute', 'relative': Whether distance from the centerline is
+    #       determined relative to the other points or by simple euclidean
+    #       norm.
+    # direction='below', 'above', 'both': In which direction do you want to 
+    #       identify outlying points.
+    # mindistance=<float>: Minimum distace or ratio of distance to register as 
+    #       outlying.
+    # array='working', 'base': Whether to use the base scores array or the 
+    #       working scores array as the resource to operate on. In, either 
+    #       case, the old working scores array is overwritten.
+    def filterPairsByScore(s, measure='absolute', direction='both',
+                           mindistance=0.0, array='base'):
+        if array=='base': source = s.scores 
+        elif array=='working': source = s.scores_work
+        else:
+            print('The array parameter must either be \'base\' or'
+                  ' \'working\'.')
+            return
 
+        temp_scores = copy.deepcopy(source)
+        temp_scores_fin = {}
+
+        if measure=='absolute':
+            for ident in temp_scores:
+                del_list = []
+                for gene in enumerate(temp_scores[ident]):
+                    x = temp_scores[ident][gene[0]][1]
+                    y = temp_scores[ident][gene[0]][2]
+                    if x==None or y==None:
+                        del_list.append(gene[0])
+                    else:
+                        x = float(x)
+                        y = float(y)
+                        hyp = sqrt(power(x, 2) + power(y, 2))
+                        or_angle = .785 - arctan(y/x)
+                        distance = sin(or_angle) * hyp
+                        if (distance < 0 and direction=='below') or \
+                           (distance > 0 and direction=='above') or \
+                           (absolute(distance) < mindistance):
+                            del_list.append(gene[0])
+                        else:
+                            print(distance, x, y)
+                del_list.reverse()
+                for to_del in del_list:
+                    del temp_scores[ident][to_del]
+            
+            for ident in temp_scores:    
+                if not temp_scores[ident]==[]:
+                    temp_scores_fin[ident] = copy.deepcopy(temp_scores[ident])
+        
+        s.scores_work = temp_scores_fin
+
+
+    def dump(s):
+        with open("output.txt", "wt") as outfile:
+            for ident in s.scores_work:
+                for i in range(len(s.sns_csvlist)):
+                    if s.sns_csvlist[i][s.sns_id_col]==ident:
+                        outfile.write(s.sns_csvlist[i][22])
+                        break
